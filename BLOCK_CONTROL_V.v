@@ -18,9 +18,7 @@ module block_controller(
 	reg [4:0] row_index, col_index;
 	reg [11:0] maze_color;
 	reg db_flag;
-
-	//these two values dictate the center of the block, incrementing and decrementing them leads the block to move in certain directions
-	reg [7:0]  x_f, y_f; //xpos, ypos,
+	reg [7:0]  x_f, y_f; 
 	
 	parameter RED   = 12'b1111_0000_0000;
 	
@@ -36,12 +34,7 @@ module block_controller(
 		else	
 			rgb=background;
 	end
-		//the +-5 for the positions give the dimension of the block (i.e. it will be 10x10 pixels)
-//	assign block_fill=vCount>=(ypos) && vCount<=(ypos+10) && hCount>=(xpos) && hCount<=(xpos+10);
-	// assign block_fill=vCount >= (ypos * 10 + 100) && vCount < (ypos * 10 + 110) && hCount >= (xpos * 10 + 300) && hCount < (xpos * 10 + 310);
-	// assign maze_fill=vCount>=(50) && vCount<=(70) && hCount>=(50) && hCount<=(70);
-	// This will create 10x10 pixels block for each index of the maze
-	// assign maze_fill=vCount>=(row_index*10 + 100) && vCount<=(row_index*10 + 110) && hCount>=(col_index*10 + 300) && hCount<=(col_index*10 + 310); 
+	
 	integer r, c;
 
 	always @(*) begin
@@ -667,12 +660,6 @@ module block_controller(
 			maze[13][38] <= 0;
 			maze[13][39] <= 1;
 		
-			// if maze[0][0] == 1) begin
-			//	maze_color <= 12'b0000_0000_0000;	
-			// end
-			// else begin
-			//	maze_color <= 12'b1111_1111_1111;
-			// end
 		end
 		else if (clk) begin
 		
@@ -682,72 +669,30 @@ module block_controller(
 			the top left corner corresponds to (hcount,vcount)~(144,35). Which means with a 640x480 resolution, the bottom right corner 
 			corresponds to ~(783,515).  
 		*/	
-		//	if ((vCount == row_index*10 + 110) && (hCount == col_index*10 + 310)) begin
-		//		col_index <= col_index + 1;
-		//		if (col_index == col_size)
-		//			begin
-		//				row_index <= row_index + 1;
-		//				col_index <= 0;
-		//			end
-		//			if (row_index == row_size) begin
-		//				row_index <= 0;
-		//				col_index <= 0;
-		//			end
-
-		//		if (maze[row_index][col_index] == 1) begin
-		//			maze_color = 12'b1111_1111_1111;	
-		//		end
-		//		else begin
-		//			maze_color = 12'b0000_0000_0000;
-		//		end
-		//	end
 			
 			if(right && (xpos != x_f || ypos != y_f) && (xpos < col_size) && (maze[ypos][xpos+1]!=1)) begin
-			     if (db_flag == 0)begin
+			     	if (db_flag == 0)begin
 				    xpos<=xpos+1; //change the amount you increment to make the speed faster 
 				    db_flag <= 1;
 				end
-//				$display("xpos = %d", xpos);
-//				$display("ypos = %d", ypos);
-//				$display("RIGHT - maze[ypos][xpos+1] = %d", maze[ypos][xpos+1]);
-//				if(xpos==800) //these are rough values to attempt looping around, you can fine-tune them to make it more accurate- refer to the block comment above
-//					xpos<=150;
 			end
 			else if(left && (xpos != x_f || ypos != y_f) && (xpos > 0) && (maze[ypos][xpos-1]!=1)) begin
-			     if (db_flag == 0)begin
+			     	if (db_flag == 0)begin
 				    xpos<=xpos-1; //change the amount you increment to make the speed faster 
 				    db_flag <= 1;
 				end
-				
-//				$display("xpos = %d", xpos);
-//				$display("ypos = %d", ypos);
-//				$display("LEFT - maze[ypos][xpos-1] = %d", maze[ypos][xpos+1]);
-//				if(xpos==150)
-//					xpos<=800;
 			end
-			//  !(xpos == x_f && ypos == y_f)
 			else if(up && (xpos != x_f || ypos != y_f) && (ypos > 0) && (maze[ypos-1][xpos]!=1)) begin
-                if (db_flag == 0)begin
+				if (db_flag == 0)begin
 				    ypos<=ypos-1;//change the amount you increment to make the speed faster 
 				    db_flag <= 1;
 				end
-				
-//				$display("xpos = %d", xpos);
-//				$display("ypos = %d", ypos);
-//				$display("UP - maze[ypos-1][xpos] = %d", maze[ypos][xpos+1]);
-//				if(ypos==34)
-//					ypos<=514;
 			end
 			else if(down && (xpos != x_f || ypos != y_f)&& (ypos < row_size) && (maze[ypos+1][xpos]!=1)) begin
 				if (db_flag == 0)begin
 				    ypos<=ypos+1;//change the amount you increment to make the speed faster 
 				    db_flag <= 1;
 				end
-//				$display("xpos = %d", xpos);
-//				$display("ypos = %d", ypos);
-//				$display("DOWN - maze[ypos+1][xpos] = %d", maze[ypos][xpos+1]);
-//				if(ypos==514)
-//					ypos<=34;
 			end
 			else begin
 			   db_flag <=0;
